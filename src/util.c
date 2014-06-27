@@ -204,25 +204,28 @@ int CreateUnicastServer(char *pAddress, int vPort)
    //else
    //   DBG("Opening unicast server socket %d for ip %s...OK.\n",sd, pAddress);
    
+   int opt = 1;
+   if(setsockopt(sd, IPPROTO_IP, IP_PKTINFO, &opt, sizeof(opt)) < 0)
    {
-      int reuse = 1;
-      if(setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(reuse)) < 0)
-      {
-         perror("Setting SO_REUSEADDR error");
-         close(sd);
-         exit(1);
-      }
-      
-      if(setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, (char *)&reuse, sizeof(reuse)) < 0)
-      {
-         perror("Setting SO_REUSEADDR error");
-         close(sd);
-         exit(1);
-      }      
-      //else
-      //   DBG("Setting SO_REUSEADDR...OK.\n");
+       perror("Setting IP_PKTINFO error");
+       close(sd);
+       exit(1);
    }
-   
+    
+   if(setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0)
+   {
+      perror("Setting SO_REUSEADDR error");
+      close(sd);
+      exit(1);
+   }
+      
+   if(setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, (char *)&opt, sizeof(opt)) < 0)
+   {
+      perror("Setting SO_REUSEADDR error");
+      close(sd);
+      exit(1);
+   }
+    
    memset((char *) &localSock, 0, sizeof(localSock));
    localSock.sin_family = AF_INET;
    localSock.sin_port = htons(vPort);

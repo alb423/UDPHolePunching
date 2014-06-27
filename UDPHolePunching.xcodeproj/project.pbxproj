@@ -6,22 +6,33 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		B2142B87195DDA6900E4F746 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B2142B6A195DC31100E4F746 /* src.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B2142B62195DC31000E4F746;
+			remoteInfo = src;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		B2142B45195DC12200E4F746 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		B2142B46195DC12200E4F746 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = util.c; sourceTree = "<group>"; };
-		B2142B47195DC12200E4F746 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		B2142B48195DC12200E4F746 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		B2142B6A195DC31100E4F746 /* src.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = src.xcodeproj; path = src/src.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		B2142B3A195DC0FE00E4F746 = {
 			isa = PBXGroup;
 			children = (
-				B2142B45195DC12200E4F746 /* main.c */,
-				B2142B46195DC12200E4F746 /* util.c */,
-				B2142B47195DC12200E4F746 /* util.h */,
-				B2142B48195DC12200E4F746 /* Makefile */,
+				B2142B6A195DC31100E4F746 /* src.xcodeproj */,
 			);
+			sourceTree = "<group>";
+		};
+		B2142B6B195DC31100E4F746 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -35,6 +46,7 @@
 			);
 			buildToolPath = /usr/bin/make;
 			dependencies = (
+				B2142B88195DDA6900E4F746 /* PBXTargetDependency */,
 			);
 			name = UDPHolePunching;
 			passBuildSettingsInEnvironment = 1;
@@ -58,12 +70,26 @@
 			);
 			mainGroup = B2142B3A195DC0FE00E4F746;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B2142B6B195DC31100E4F746 /* Products */;
+					ProjectRef = B2142B6A195DC31100E4F746 /* src.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				B2142B3F195DC0FE00E4F746 /* UDPHolePunching */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXTargetDependency section */
+		B2142B88195DDA6900E4F746 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = src;
+			targetProxy = B2142B87195DDA6900E4F746 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		B2142B40195DC0FE00E4F746 /* Debug */ = {
