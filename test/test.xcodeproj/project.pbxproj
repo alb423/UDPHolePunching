@@ -6,67 +6,56 @@
 	objectVersion = 46;
 	objects = {
 
-/* Begin PBXFileReference section */
-		B2142B45195DC12200E4F746 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		B2142B46195DC12200E4F746 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = util.c; sourceTree = "<group>"; };
-		B2142B47195DC12200E4F746 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
-		B2142B48195DC12200E4F746 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
-/* End PBXFileReference section */
-
 /* Begin PBXGroup section */
-		B2142B3A195DC0FE00E4F746 = {
+		B2142B4E195DC2E500E4F746 = {
 			isa = PBXGroup;
 			children = (
-				B2142B45195DC12200E4F746 /* main.c */,
-				B2142B46195DC12200E4F746 /* util.c */,
-				B2142B47195DC12200E4F746 /* util.h */,
-				B2142B48195DC12200E4F746 /* Makefile */,
 			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		B2142B3F195DC0FE00E4F746 /* UDPHolePunching */ = {
+		B2142B53195DC2E500E4F746 /* test */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = B2142B42195DC0FE00E4F746 /* Build configuration list for PBXLegacyTarget "UDPHolePunching" */;
+			buildConfigurationList = B2142B56195DC2E500E4F746 /* Build configuration list for PBXLegacyTarget "test" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
 			dependencies = (
 			);
-			name = UDPHolePunching;
+			name = test;
 			passBuildSettingsInEnvironment = 1;
-			productName = UDPHolePunching;
+			productName = test;
 		};
 /* End PBXLegacyTarget section */
 
 /* Begin PBXProject section */
-		B2142B3B195DC0FE00E4F746 /* Project object */ = {
+		B2142B4F195DC2E500E4F746 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = albert;
 			};
-			buildConfigurationList = B2142B3E195DC0FE00E4F746 /* Build configuration list for PBXProject "UDPHolePunching" */;
+			buildConfigurationList = B2142B52195DC2E500E4F746 /* Build configuration list for PBXProject "test" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = B2142B3A195DC0FE00E4F746;
+			mainGroup = B2142B4E195DC2E500E4F746;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B2142B3F195DC0FE00E4F746 /* UDPHolePunching */,
+				B2142B53195DC2E500E4F746 /* test */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin XCBuildConfiguration section */
-		B2142B40195DC0FE00E4F746 /* Debug */ = {
+		B2142B54195DC2E500E4F746 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -104,7 +93,7 @@
 			};
 			name = Debug;
 		};
-		B2142B41195DC0FE00E4F746 /* Release */ = {
+		B2142B55195DC2E500E4F746 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -136,7 +125,7 @@
 			};
 			name = Release;
 		};
-		B2142B43195DC0FE00E4F746 /* Debug */ = {
+		B2142B57195DC2E500E4F746 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEBUGGING_SYMBOLS = YES;
@@ -148,7 +137,7 @@
 			};
 			name = Debug;
 		};
-		B2142B44195DC0FE00E4F746 /* Release */ = {
+		B2142B58195DC2E500E4F746 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				OTHER_CFLAGS = "";
@@ -160,24 +149,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B2142B3E195DC0FE00E4F746 /* Build configuration list for PBXProject "UDPHolePunching" */ = {
+		B2142B52195DC2E500E4F746 /* Build configuration list for PBXProject "test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B2142B40195DC0FE00E4F746 /* Debug */,
-				B2142B41195DC0FE00E4F746 /* Release */,
+				B2142B54195DC2E500E4F746 /* Debug */,
+				B2142B55195DC2E500E4F746 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B2142B42195DC0FE00E4F746 /* Build configuration list for PBXLegacyTarget "UDPHolePunching" */ = {
+		B2142B56195DC2E500E4F746 /* Build configuration list for PBXLegacyTarget "test" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				B2142B43195DC0FE00E4F746 /* Debug */,
-				B2142B44195DC0FE00E4F746 /* Release */,
+				B2142B57195DC2E500E4F746 /* Debug */,
+				B2142B58195DC2E500E4F746 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = B2142B3B195DC0FE00E4F746 /* Project object */;
+	rootObject = B2142B4F195DC2E500E4F746 /* Project object */;
 }

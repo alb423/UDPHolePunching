@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>UDPHolePunching.xcscheme</key>
+		<key>test.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -12,12 +12,7 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>B2142B3F195DC0FE00E4F746</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>B2142B4A195DC19D00E4F746</key>
+		<key>B2142B53195DC2E500E4F746</key>
 		<dict>
 			<key>primary</key>
 			<true/>
