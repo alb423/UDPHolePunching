@@ -66,7 +66,8 @@ char * getMyIpString(char *pIfName)
    
    for(i=0;i<NET_MAX_INTERFACE;i++)
    {
-      if(strncmp("en1", pIfName, 3)==0)
+      //if(strncmp("en1", pIfName, 3)==0)
+      if(strncmp(INTERFACE_NAME_2, pIfName, strlen(INTERFACE_NAME_2))==0)
       {
          return CopyString(gpLocalAddr[1]);
       } 
@@ -218,14 +219,14 @@ int CreateUnicastServer(char *pAddress, int vPort)
       close(sd);
       exit(1);
    }
-      
+/*      
    if(setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, (char *)&opt, sizeof(opt)) < 0)
    {
       perror("Setting SO_REUSEADDR error");
       close(sd);
       exit(1);
    }
-    
+*/    
    memset((char *) &localSock, 0, sizeof(localSock));
    localSock.sin_family = AF_INET;
    localSock.sin_port = htons(vPort);
