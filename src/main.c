@@ -24,11 +24,12 @@ tThread tptr[2];
 
 void PunchingThread(void* data);
 
+#define SEND_BUF_LEN  256
 #define COORDINATE_PORT 10001
 int vClientSocket = 0;
 int vServerSocket = 0;
 struct sockaddr_in gPeerSockAddr;
-char pSendBuffer[128]={0};
+char pSendBuffer[SEND_BUF_LEN]={0};
 
 int punching(int vPort, char *pcoordinatorAddress, char * pPeerAddress);
 int coordinator(int argc, char **argv);
@@ -48,7 +49,11 @@ int main(int argc, char **argv)
    }
    else
    {
-       if(argc==4)
+       if(argc==3)
+       {
+           punching(atoi(argv[1]), argv[2], NULL);
+       }      
+       else if(argc==4)
        {
            punching(atoi(argv[1]), argv[2], argv[3]);
        }
@@ -56,7 +61,8 @@ int main(int argc, char **argv)
        {
            printf("Usage: punching localPort coordinatorAddr peerAddr\n");
        }         
-   }      
+   }
+   return 0;      
 }
 
 
@@ -67,9 +73,12 @@ typedef struct tMapping{
    char pDstAddr[32];
 }tMapping;
 
+
+
 int coordinator(int argc, char **argv)
 {
    int vReciveLen=0, vResult=0;
+   char pReceiveData[1024]={0};
    char *pMyAddress=NULL;
                
    int vListenPort = 0, vClientCnt=0;
@@ -86,8 +95,8 @@ int coordinator(int argc, char **argv)
              
    vListenPort = COORDINATE_PORT;             
    pMyAddress = getMyIpString(argv[1]); // should be eth1 or eth0
-   memset(pSendBuffer, 0, 128);
-   sprintf(pSendBuffer, "%s:%d", pMyAddress, vListenPort);
+   memset(pSendBuffer, 0, SEND_BUF_LEN);
+   sprintf(pSendBuffer, "%s %d", pMyAddress, vListenPort);
    InitMyRandom(pMyAddress);
 
    vServerSocket = CreateUnicastServer(pMyAddress, vListenPort);
@@ -147,16 +156,10 @@ int coordinator(int argc, char **argv)
          printf("receive unexpected data\n");
          break;
       }
-      DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
+      
       vReciveLen = recvmsg(vServerSocket, &mh, 0);
       //DBG("set msg_namelen=%d msg_iovlen=%d msg_controllen=%d, vReciveLen=%d\n", mh.msg_namelen, mh.msg_iovlen, mh.msg_controllen,vReciveLen);
-      char pTmp[1024]={0};
-      if(vReciveLen<1024)
-      {
-         memcpy(pTmp, iovbuf, vReciveLen);
-         DBG("receive data is(ip:port): %s\n", pTmp);
-      }
-             
+      
       struct cmsghdr *cmsg = NULL;
       struct in_pktinfo *pi = NULL;
       for(cmsg = CMSG_FIRSTHDR(&mh) ;
@@ -186,9 +189,14 @@ int coordinator(int argc, char **argv)
                if(pTmp)
                   memcpy(pSrc, pTmp, strlen(pTmp));
                 
-               DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
-               DBG("receive socket nIndex=%d packet from %s:%d, to %s\n", pi->ipi_ifindex, pSrc, ntohs(localaddr.sin_port), pDst);
-               
+               //DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
+               DBG("receive socket nIndex=%d packet from %s:%d to %s\n", pi->ipi_ifindex, pSrc, ntohs(localaddr.sin_port), pDst);
+               if(vReciveLen<1024)
+               {
+                  memset(pReceiveData, 0, 1024);
+                  memcpy(pReceiveData, iovbuf, vReciveLen);
+                  DBG("receive data :\n%s\n", pReceiveData);
+               }                     
                 //struct      sockaddr_in guest;
                 //getsockname(vServerSocket, (struct sockaddr *)&guest, NULL);
                 //DBG("pDst=%s:%d\n",inet_ntoa(guest.sin_addr), ntohs(guest.sin_port));
@@ -203,8 +211,6 @@ int coordinator(int argc, char **argv)
                   memset(vxMapping[0].pDstAddr, 0, 32);
                   memcpy(vxMapping[0].pDstAddr, pDst, 32);  
                   vxMapping[0].DstPort = vListenPort;      
-
-
                 }                
                 else if(vClientCnt==2)
                 {
@@ -226,12 +232,17 @@ int coordinator(int argc, char **argv)
                      vSockAddr.sin_addr.s_addr = inet_addr(vxMapping[i].pSrcAddr);
                      vSockAddr.sin_port = htons(vxMapping[i].SrcPort);  
                          
-                     memset(pSendBuffer, 0, 128);
+                     memset(pSendBuffer, 0, SEND_BUF_LEN);
                      if(i==0)
-                        sprintf(pSendBuffer, "%d", vxMapping[1].SrcPort);
+                     {
+                        sprintf(pSendBuffer, "%s %d\n", vxMapping[1].pSrcAddr, vxMapping[1].SrcPort);
+                        fprintf(stderr,"send \"%s %d\" to %s\n",vxMapping[1].pSrcAddr, vxMapping[1].SrcPort, vxMapping[0].pSrcAddr);
+                     }
                      else if(i==1)
-                        sprintf(pSendBuffer, "%d", vxMapping[0].SrcPort);
-                                             
+                     {
+                        sprintf(pSendBuffer, "%s %d\n", vxMapping[0].pSrcAddr, vxMapping[0].SrcPort);
+                        fprintf(stderr,"send \"%s %d\" to %s\n",vxMapping[0].pSrcAddr, vxMapping[0].SrcPort, vxMapping[1].pSrcAddr);
+                     }
                                              
                      if(sendto(vServerSocket, pSendBuffer, strlen(pSendBuffer), 0, (struct sockaddr*)&vSockAddr, sizeof(vSockAddr)) < 0)
                      {
@@ -264,16 +275,25 @@ int coordinator(int argc, char **argv)
 
 
 //int punching(int vPort, char *pPeerAddress, int vPeerPort)
-int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddress)
+int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddressUserDefined)
 {
-   int vReciveLen=0, vResult=0, vPeerPort=0;
+   int i=0, vLen=0, vReciveLen=0, vResult=0, vPeerPort=0;
+   char pReceiveData[1024]={0};
+   char pPeerAddress[32]={0};
    char *pMyAddress=NULL;
             
    initMyIpString();
    
    pMyAddress = getMyIpString(INTERFACE_NAME_1);
-   memset(pSendBuffer, 0, 128);
-   sprintf(pSendBuffer, "%s:%d", pMyAddress, vPort);
+   memset(pSendBuffer, 0, SEND_BUF_LEN);
+   //sprintf(pSendBuffer, "%s:%d", pMyAddress, vPort);
+   
+   for(i=0;i<gLocalInterfaceCount;i++)
+   {
+      vLen = strlen(pSendBuffer);
+      sprintf(pSendBuffer+vLen, "%s:%d\n", gpLocalAddr[i], vPort);
+   }
+   fprintf(stderr, "pSendBuffer=\n%s\n",pSendBuffer);
    InitMyRandom(pMyAddress);
 
    
@@ -358,13 +378,19 @@ int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddress)
       }
       
       vReciveLen = recvmsg(vServerSocket, &mh, 0);
-      DBG("set msg_namelen=%d msg_iovlen=%d msg_controllen=%d, vReciveLen=%d\n", mh.msg_namelen, mh.msg_iovlen, mh.msg_controllen, vReciveLen);
-      char pTmp[1024]={0};
+      //DBG("set msg_namelen=%d msg_iovlen=%d msg_controllen=%d, vReciveLen=%d\n", mh.msg_namelen, mh.msg_iovlen, mh.msg_controllen, vReciveLen);
       if(vReciveLen<1024)
       {
-         memcpy(pTmp, iovbuf, vReciveLen);
-         DBG("receive coordinate response from(port): %s\n", pTmp);
-         vPeerPort = atoi(pTmp);
+         memcpy(pReceiveData, iovbuf, vReciveLen);
+         DBG("receive coordinate response from: %s\n", pReceiveData);
+         sscanf(pReceiveData,"%s %d", pPeerAddress, &vPeerPort);
+         
+         // For Test only
+         if(pPeerAddressUserDefined!=NULL)
+         {
+            memset(pPeerAddress,0,32);
+            sprintf(pPeerAddress, "%s", pPeerAddressUserDefined);
+         }
       }
       
       struct cmsghdr *cmsg = NULL;
@@ -489,13 +515,6 @@ int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddress)
       vReciveLen = recvmsg(vServerSocket, &mh, 0);
       //DBG("set msg_namelen=%d msg_iovlen=%d msg_controllen=%d, vReciveLen=%d\n", mh.msg_namelen, mh.msg_iovlen, mh.msg_controllen,vReciveLen);
       //DBG("receive data from: %s\n", mh.msg_iov[0].iov_base);
-      char pTmp[1024]={0};
-      if(vReciveLen<1024)
-      {
-         memcpy(pTmp, iovbuf, vReciveLen);
-         DBG("receive coordinate response from(port): %s\n", pTmp);
-         vPeerPort = atoi(pTmp);
-      }
              
       struct cmsghdr *cmsg = NULL;
       struct in_pktinfo *pi = NULL;
@@ -526,12 +545,14 @@ int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddress)
                if(pTmp)
                   memcpy(pSrc, pTmp, strlen(pTmp));
                 
-               DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
+               //DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
                DBG("receive socket nIndex=%d packet from %s:%d, to %s\n", pi->ipi_ifindex, pSrc, ntohs(localaddr.sin_port), pDst);
-
-                //struct      sockaddr_in guest;
-                //getsockname(vServerSocket, (struct sockaddr *)&guest, NULL);
-                //DBG("pDst=%s:%d\n",inet_ntoa(guest.sin_addr), ntohs(guest.sin_port));
+               if(vPeerPort!=ntohs(localaddr.sin_port))
+               {
+                  DBG("Change port from %d to %d\n", vPeerPort, ntohs(localaddr.sin_port));
+                  vPeerPort = ntohs(localaddr.sin_port);
+                  gPeerSockAddr.sin_port = htons(vPeerPort);
+               }
  
             }    
             break;

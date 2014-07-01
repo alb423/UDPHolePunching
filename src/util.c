@@ -15,6 +15,7 @@
 
 #include "util.h"
 
+int  gLocalInterfaceCount=0;
 char gpLocalAddr[NET_MAX_INTERFACE][32]={{0}};
 char gpMacAddr[NET_MAX_INTERFACE][32]={{0}};
 #define LOCAL_ADDR gpLocalAddr//"192.168.2.102"
@@ -85,7 +86,7 @@ char * initMyIpString(void)
    void * tmpAddrPtr=NULL;
    
    getifaddrs(&ifAddrStruct);
-   
+   gLocalInterfaceCount = 0;
    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) 
    {
       if (ifa ->ifa_addr->sa_family==AF_INET) 
@@ -134,6 +135,7 @@ char * initMyIpString(void)
             }
             #endif
             vInterfaceCount++;
+            gLocalInterfaceCount++;
          } 
       } 
       else if (ifa->ifa_addr->sa_family==AF_INET6) 

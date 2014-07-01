@@ -27,7 +27,7 @@ extern void noprintf(char *format, ...);
 #define INTERFACE_NAME_2 "eth1"
 #endif
 // Network
-
+extern int  gLocalInterfaceCount;
 extern char gpLocalAddr[NET_MAX_INTERFACE][32];
 
 extern int CreateUnicastClient(struct sockaddr_in *pSockAddr);
