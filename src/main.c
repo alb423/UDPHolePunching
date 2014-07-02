@@ -216,7 +216,6 @@ int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddressUserDefined
                         gxPeerSockAddr[i].sin_family = AF_INET;
                         gxPeerSockAddr[i].sin_addr.s_addr = inet_addr(pPeerAddress);
                         gxPeerSockAddr[i].sin_port = htons(vPrivatePort);
-                        vPeerPort = vPrivatePort;
                         
                         pTmp = strstr(pTmp, "\n");
                         if(pTmp!=NULL) 
@@ -228,6 +227,9 @@ int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddressUserDefined
                         }
                      }
                   }
+                  
+                  // TODO : fix me for Type 4
+                  vPeerPort = vPrivatePort;                  
                }       
             }    
             break;
