@@ -338,12 +338,19 @@ int punching(int vPort, char *pCoordinatorAddress, char *pPeerAddressUserDefined
                
                // TODO: check here
                //DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
+               //gxPeerSockAddr[i].sin_addr.s_addr
                DBG("-> receive packet from %s:%d, to %s\n", pSrc, ntohs(localaddr.sin_port), pDst);
-               if(vPeerPort!=ntohs(localaddr.sin_port))
+               for(i=0;i<NET_MAX_INTERFACE;i++)
                {
-                  DBG("Change port from %d to %d\n", vPeerPort, ntohs(localaddr.sin_port));
-                  vPeerPort = ntohs(localaddr.sin_port);
-                  gxPeerSockAddr[0].sin_port = htons(vPeerPort);
+                  if(gxPeerSockAddr[i].sin_addr.s_addr==localaddr.sin_addr.s_addr)
+                  {
+                     if(gxPeerSockAddr[0].sin_port!=localaddr.sin_port)
+                     {
+                        DBG("Change port from %d to %d for %s\n", vPeerPort, ntohs(localaddr.sin_port), pSrc);
+                        vPeerPort = ntohs(localaddr.sin_port);
+                        gxPeerSockAddr[0].sin_port = htons(vPeerPort);
+                     }
+                  }
                }
  
             }    
