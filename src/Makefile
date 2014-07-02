@@ -1,7 +1,7 @@
 CC = gcc
 STRIP	= strip
-punching: main.o util.o
-	$(CC) main.o util.o -lpthread -o punching
+punching: main.o util.o coordinator.o
+	$(CC) main.o util.o coordinator.o -lpthread -o punching
 	cp punching coordinator
    
 main.o:	main.c
@@ -10,5 +10,8 @@ main.o:	main.c
 util.o:	util.c
 	$(CC) -c -Wall util.c 
 
+coordinator.o:	coordinator.c
+	$(CC) -c -Wall coordinator.c 
+	
 clean:	
 	rm *.o;rm punching coordinator

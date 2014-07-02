@@ -15,8 +15,8 @@ extern void noprintf(char *format, ...);
 	#define DBG noprintf
 #endif
 
-//#define UNICAST_ADDR "192.168.1.24"//"239.255.255.250"
-#define UNICAST_PORT 3702
+#define SEND_BUF_LEN  1024
+#define COORDINATE_PORT 10001
 #define NET_MAX_INTERFACE 4
 
 #ifdef __APPLE__
