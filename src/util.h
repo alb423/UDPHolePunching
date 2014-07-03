@@ -17,7 +17,7 @@ extern void noprintf(char *format, ...);
 
 #define SEND_BUF_LEN  1024
 #define COORDINATE_PORT 10001
-#define NET_MAX_INTERFACE 4
+#define NET_MAX_INTERFACE 8
 
 #ifdef __APPLE__
 #define INTERFACE_NAME_1 "en0"
@@ -26,10 +26,18 @@ extern void noprintf(char *format, ...);
 #define INTERFACE_NAME_1 "eth0"
 #define INTERFACE_NAME_2 "eth1"
 #endif
-// Network
-extern int  gLocalInterfaceCount;
-extern char gpLocalAddr[NET_MAX_INTERFACE][32];
 
+
+// Network
+typedef struct tNICInfo {
+    char pIfName[32];
+    char pLocalAddr[32];
+    char pMacAddr[32];
+} tNICInfo;
+
+
+extern int  gLocalInterfaceCount;
+extern tNICInfo gxNICInfo[NET_MAX_INTERFACE];
 extern int CreateUnicastClient(struct sockaddr_in *pSockAddr);
 extern int CreateUnicastServer(char *pAddress, int port);
 

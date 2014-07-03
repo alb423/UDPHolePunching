@@ -1,0 +1,279 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9AC90B4C196508A700CAA6CA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC90B4B196508A700CAA6CA /* Foundation.framework */; };
+		9AC90B76196508E100CAA6CA /* client.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B71196508E100CAA6CA /* client.c */; };
+		9AC90B77196508E100CAA6CA /* coordinator.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B72196508E100CAA6CA /* coordinator.c */; };
+		9AC90B78196508E100CAA6CA /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B74196508E100CAA6CA /* util.c */; };
+		9AC90B79196508F600CAA6CA /* libtwp2p.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AC90B73196508E100CAA6CA /* libtwp2p.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		9AC90B46196508A700CAA6CA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				9AC90B79196508F600CAA6CA /* libtwp2p.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		9AC90B48196508A700CAA6CA /* libtwp2p.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtwp2p.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AC90B4B196508A700CAA6CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		9AC90B4F196508A700CAA6CA /* twp2p-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "twp2p-Prefix.pch"; sourceTree = "<group>"; };
+		9AC90B59196508A700CAA6CA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		9AC90B5C196508A700CAA6CA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		9AC90B71196508E100CAA6CA /* client.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = client.c; path = ../../src/client.c; sourceTree = "<group>"; };
+		9AC90B72196508E100CAA6CA /* coordinator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = coordinator.c; path = ../../src/coordinator.c; sourceTree = "<group>"; };
+		9AC90B73196508E100CAA6CA /* libtwp2p.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libtwp2p.h; path = ../../src/libtwp2p.h; sourceTree = "<group>"; };
+		9AC90B74196508E100CAA6CA /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../src/util.c; sourceTree = "<group>"; };
+		9AC90B75196508E100CAA6CA /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../src/util.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9AC90B45196508A700CAA6CA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9AC90B4C196508A700CAA6CA /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9AC90B3F196508A700CAA6CA = {
+			isa = PBXGroup;
+			children = (
+				9AC90B4D196508A700CAA6CA /* twp2p */,
+				9AC90B4A196508A700CAA6CA /* Frameworks */,
+				9AC90B49196508A700CAA6CA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9AC90B49196508A700CAA6CA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9AC90B48196508A700CAA6CA /* libtwp2p.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9AC90B4A196508A700CAA6CA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9AC90B4B196508A700CAA6CA /* Foundation.framework */,
+				9AC90B59196508A700CAA6CA /* XCTest.framework */,
+				9AC90B5C196508A700CAA6CA /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9AC90B4D196508A700CAA6CA /* twp2p */ = {
+			isa = PBXGroup;
+			children = (
+				9AC90B71196508E100CAA6CA /* client.c */,
+				9AC90B72196508E100CAA6CA /* coordinator.c */,
+				9AC90B73196508E100CAA6CA /* libtwp2p.h */,
+				9AC90B74196508E100CAA6CA /* util.c */,
+				9AC90B75196508E100CAA6CA /* util.h */,
+				9AC90B4E196508A700CAA6CA /* Supporting Files */,
+			);
+			path = twp2p;
+			sourceTree = "<group>";
+		};
+		9AC90B4E196508A700CAA6CA /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9AC90B4F196508A700CAA6CA /* twp2p-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9AC90B47196508A700CAA6CA /* twp2p */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9AC90B6B196508A700CAA6CA /* Build configuration list for PBXNativeTarget "twp2p" */;
+			buildPhases = (
+				9AC90B44196508A700CAA6CA /* Sources */,
+				9AC90B45196508A700CAA6CA /* Frameworks */,
+				9AC90B46196508A700CAA6CA /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = twp2p;
+			productName = twp2p;
+			productReference = 9AC90B48196508A700CAA6CA /* libtwp2p.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9AC90B40196508A700CAA6CA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "Liao KuoHsun";
+			};
+			buildConfigurationList = 9AC90B43196508A700CAA6CA /* Build configuration list for PBXProject "twp2p" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 9AC90B3F196508A700CAA6CA;
+			productRefGroup = 9AC90B49196508A700CAA6CA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9AC90B47196508A700CAA6CA /* twp2p */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9AC90B44196508A700CAA6CA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9AC90B77196508E100CAA6CA /* coordinator.c in Sources */,
+				9AC90B76196508E100CAA6CA /* client.c in Sources */,
+				9AC90B78196508E100CAA6CA /* util.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		9AC90B69196508A700CAA6CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		9AC90B6A196508A700CAA6CA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9AC90B6C196508A700CAA6CA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/twp2p.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "twp2p/twp2p-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		9AC90B6D196508A700CAA6CA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/twp2p.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "twp2p/twp2p-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9AC90B43196508A700CAA6CA /* Build configuration list for PBXProject "twp2p" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9AC90B69196508A700CAA6CA /* Debug */,
+				9AC90B6A196508A700CAA6CA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9AC90B6B196508A700CAA6CA /* Build configuration list for PBXNativeTarget "twp2p" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9AC90B6C196508A700CAA6CA /* Debug */,
+				9AC90B6D196508A700CAA6CA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9AC90B40196508A700CAA6CA /* Project object */;
+}

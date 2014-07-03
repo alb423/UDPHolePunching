@@ -17,10 +17,8 @@
 #include "util.h"
 
 int  gLocalInterfaceCount=0;
-char gpLocalAddr[NET_MAX_INTERFACE][32]={{0}};
-char gpMacAddr[NET_MAX_INTERFACE][32]={{0}};
-#define LOCAL_ADDR gpLocalAddr//"192.168.2.102"
 
+tNICInfo gxNICInfo[NET_MAX_INTERFACE];
 
 void * MyMalloc(int vSize)
 {
@@ -56,7 +54,7 @@ char * CopyString(char *pSrc)
 
 char * getMyMacAddress(void)
 {
-   return CopyString(gpMacAddr[0]);
+   return CopyString(gxNICInfo[0].pMacAddr);
 }
 
 // Utilities of Network
@@ -64,28 +62,27 @@ char * getMyIpString(char *pIfName)
 {
    int i = 0;
    if(pIfName==NULL)
-   return NULL;
+       return NULL;
    
    for(i=0;i<NET_MAX_INTERFACE;i++)
    {
-      //if(strncmp("en1", pIfName, 3)==0)
-      if(strncmp(INTERFACE_NAME_2, pIfName, strlen(INTERFACE_NAME_2))==0)
+      if(strncmp(gxNICInfo[i].pIfName, pIfName, strlen(pIfName))==0)
       {
-         return CopyString(gpLocalAddr[1]);
+         return CopyString(gxNICInfo[i].pLocalAddr);
       } 
    }
-   return CopyString(gpLocalAddr[0]);
+   return CopyString(gxNICInfo[0].pLocalAddr);
 }
 
 
 char * initMyIpString(void)
 {
    int vInterfaceCount=0;
-   char pInterface[128]={0};
    struct ifaddrs * ifAddrStruct=NULL;
    struct ifaddrs * ifa=NULL;
    void * tmpAddrPtr=NULL;
    
+   memset(gxNICInfo, 0, sizeof(gxNICInfo));
    getifaddrs(&ifAddrStruct);
    gLocalInterfaceCount = 0;
    for (ifa = ifAddrStruct; ifa != NULL; ifa = ifa->ifa_next) 
@@ -98,47 +95,15 @@ char * initMyIpString(void)
          tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
          
          inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-         //DBG("%s IP Address %s\n", ifa->ifa_name, addressBuffer); 
-         if(strncmp(ifa->ifa_name, INTERFACE_NAME_1, 2)==0)
-         {
-            // Note: you may set local address for different interface. For example:eth0, eth1
-            memcpy(gpLocalAddr[vInterfaceCount], addressBuffer, strlen(addressBuffer));
-            memset(pInterface, 0 ,128);
-            memcpy(pInterface, ifa->ifa_name, strlen(ifa->ifa_name));
-            
-            #ifdef __APPLE__
-               // I don't know how to get Mac Address in Mac OS
-               sprintf(gpMacAddr[0], "10ddb1acc6ee");
-               sprintf(gpMacAddr[1], "4c8d79eaee74");
-            #else            
-            {
-               // For linux system
-               int sock;
-               struct ifreq ifr;
-               
-               sock = socket(AF_INET, SOCK_DGRAM, 0);
-               ifr.ifr_addr.sa_family = AF_INET;
-               
-               strncpy(ifr.ifr_name, pInterface, IFNAMSIZ-1);
-               
-               ioctl(sock, SIOCGIFHWADDR, &ifr);
-               
-               close(sock);
-               
-               sprintf(gpMacAddr[vInterfaceCount], "%.2x%.2x%.2x%.2x%.2x%.2x", 
-               (unsigned char)ifr.ifr_hwaddr.sa_data[0],
-               (unsigned char)ifr.ifr_hwaddr.sa_data[1],
-               (unsigned char)ifr.ifr_hwaddr.sa_data[2],
-               (unsigned char)ifr.ifr_hwaddr.sa_data[3],
-               (unsigned char)ifr.ifr_hwaddr.sa_data[4],
-               (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
-               //DBG("MAC %s\n", gpMacAddr[vInterfaceCount]); 
-            }
-            #endif
-            vInterfaceCount++;
-            gLocalInterfaceCount++;
-         } 
-      } 
+         DBG("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
+
+         // Note: you may set local address for different interface. For example:eth0, eth1
+         memcpy(gxNICInfo[vInterfaceCount].pLocalAddr, addressBuffer, strlen(addressBuffer));
+         memcpy(gxNICInfo[vInterfaceCount].pIfName, ifa->ifa_name, strlen(ifa->ifa_name));
+
+         vInterfaceCount++;
+         gLocalInterfaceCount++;
+      }
       else if (ifa->ifa_addr->sa_family==AF_INET6) 
       {   
          // check it is IP6
@@ -149,11 +114,9 @@ char * initMyIpString(void)
          //DBG("%s IP Address %s\n", ifa->ifa_name, addressBuffer); 
       }         
    }
-   
-   
-   DBG("gpLocalAddr is set to %s, MAC is %s\n", gpLocalAddr[0], gpMacAddr[0]);    
+    
    if (ifAddrStruct!=NULL) freeifaddrs(ifAddrStruct);
-   return gpLocalAddr[0];
+   return gxNICInfo[0].pLocalAddr;
 }
 
 int CreateUnicastClient(struct sockaddr_in *pSockAddr)
