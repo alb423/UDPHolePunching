@@ -1,17 +1,21 @@
-CC = gcc
-STRIP	= strip
-punching: main.o util.o coordinator.o
-	$(CC) main.o util.o coordinator.o -lpthread -o punching
-	cp punching coordinator
-   
-main.o:	main.c
-	$(CC) -c -Wall main.c 
-		
-util.o:	util.c
-	$(CC) -c -Wall util.c 
+CROSS_COMPILE=
+CC	= $(CROSS_COMPILE)gcc
+STRIP	= $(CROSS_COMPILE)strip
+AR	= $(CROSS_COMPILE)ar
 
-coordinator.o:	coordinator.c
-	$(CC) -c -Wall coordinator.c 
-	
+CFLAGS  = -g -Wall -Wno-format-security
+OBJ     = util.o coordinator.o client.o
+SOURCES = util.c client.c coordinator.c
+LIBS    = libtwp2p.a -lpthread
+   
+all: libtwp2p.a punching
+   
+libtwp2p.a: $(OBJ)
+	$(AR) cr libtwp2p.a $(OBJ) 
+
+punching: main.o
+	$(CC) $(CFLAGS) -o $@ main.o $(LIBS)
+	cp punching coordinator
+
 clean:	
-	rm *.o;rm punching coordinator
+	rm *.o;rm libtwp2p.a punching coordinator

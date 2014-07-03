@@ -330,7 +330,7 @@ int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, tPeerData
                              int bExist = 0;
                              for(j=0;j<vPunchingSuccessCount;j++)
                              {
-                                 DBG("%d to %d \n", pPeerData->s_addr[j], localaddr.sin_addr.s_addr);
+                                 //DBG("%d to %d \n", pPeerData->s_addr[j], localaddr.sin_addr.s_addr);
                                  if(pPeerData->s_addr[j]==localaddr.sin_addr.s_addr)
                                  {
                                     bExist = 1;
