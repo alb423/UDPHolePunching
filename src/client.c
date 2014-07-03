@@ -14,7 +14,8 @@
 #include <sys/msg.h>
 
 #include "util.h"
-                       
+#include "libtwp2p.h"
+
 typedef struct {
    pthread_t thread_tid;
    long thread_count;
@@ -28,11 +29,15 @@ char gpSendBuffer[SEND_BUF_LEN]={0};
 
 void PunchingThread(void* data);
 
-int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, char * pPeerAddress, int *pPeerPort)
+// TODO:
+// below triples may have more than one
+// return socket, pPeerAddress, &vPeerPort
+int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, tPeerData *pPeerData)
 {
-   int i=0, vLen=0, vReciveLen=0, vResult=0, vPeerPort=0;
+   int i=0, j=0;
+   int vLen=0, vReciveLen=0, vResult=0, vPeerPort=0;
    int vServerSocket=0, vPrivatePort=0;
-   int bPunchingSuccess = 0;
+   int bPunchingSuccess=0, vPunchingSuccessCount=0;
    char pReceiveData[1024]={0};
    char pAddress[32]={0};
    char *pMyAddress=NULL;
@@ -40,7 +45,8 @@ int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, char * pP
    memset((char *) &gxPeerSockAddr, 0, sizeof(struct sockaddr_in)*4);
    initMyIpString();
    
-   // TODO: the interface name should be assigned by user
+   // TODO: the interface name can be assigned by user
+   // or we do the same punching on all interface
    
    pMyAddress = getMyIpString(pIfName);
    memset(gpSendBuffer, 0, SEND_BUF_LEN);
@@ -309,30 +315,43 @@ int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, char * pP
                {
                   if(gxPeerSockAddr[i].sin_addr.s_addr==localaddr.sin_addr.s_addr)
                   {
-                     if(gxPeerSockAddr[0].sin_port!=localaddr.sin_port)
+                     if(gxPeerSockAddr[i].sin_port!=localaddr.sin_port)
                      {
                         DBG("Change port from %d to %d for %s\n", vPeerPort, ntohs(localaddr.sin_port), pSrc);
                         vPeerPort = ntohs(localaddr.sin_port);
-                        gxPeerSockAddr[0].sin_port = htons(vPeerPort);
+                        gxPeerSockAddr[i].sin_port = htons(vPeerPort);
                      }
                      else
-                     {
-                         char *pTmp;
-                         
+                     {                         
                          // inet_ntoa() use a global buffer to store the string,
                          // so we need to copy the value before we invoke inet_ntoa() next time
-                         if(pPeerAddress)
+                         if(pPeerData)
                          {
-                             pTmp = inet_ntoa(localaddr.sin_addr);
-                             if(pTmp)
-                                 memcpy(pPeerAddress, pTmp, strlen(pTmp));
+                             int bExist = 0;
+                             for(j=0;j<vPunchingSuccessCount;j++)
+                             {
+                                 DBG("%d to %d \n", pPeerData->s_addr[j], localaddr.sin_addr.s_addr);
+                                 if(pPeerData->s_addr[j]==localaddr.sin_addr.s_addr)
+                                 {
+                                    bExist = 1;
+                                    break;
+                                 }
+                             }
+                             
+                             if(bExist==0)
+                             {
+                                char *pTmp;
+                                pTmp = inet_ntoa(localaddr.sin_addr);
+                                if(pTmp)
+                                    memcpy(pPeerData->pPeerAddress[vPunchingSuccessCount], pTmp, strlen(pTmp));
+                                
+                                pPeerData->PeerPort[vPunchingSuccessCount] = ntohs(localaddr.sin_port);
+                                pPeerData->Socket[vPunchingSuccessCount] = vServerSocket;
+                                pPeerData->s_addr[vPunchingSuccessCount] = localaddr.sin_addr.s_addr;
+                                vPunchingSuccessCount++;
+                             }
                          }
-                         
-                         if(pPeerPort)
-                         {
-                             *pPeerPort = ntohs(localaddr.sin_port);
-                         }
-                         
+
                          bPunchingSuccess = 1;
                      }
                   }
@@ -352,7 +371,7 @@ int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, char * pP
    if(bPunchingSuccess==1)
    {
        DBG("P2P HolePunching Success\n");
-       return vServerSocket;
+       return vPunchingSuccessCount;
    }
    else
    {

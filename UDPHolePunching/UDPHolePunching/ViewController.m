@@ -20,16 +20,19 @@
     [super viewDidLoad];
     
     // TODO:
-    int vSocket = 0;
-    int vPeerPort=0, vClientListenPort=7272;
-    char pPeerAddress[32]={0};
-    char pServerAddr[] = "192.168.82.85"; //192.168.82.85, 54.199.200.164
+    int i=0, vCount=0;
+    int vClientListenPort=7272;
+    //char pPeerAddress[32]={0};
+    //int vPeerPort=0;
+    char pServerAddr[] = "54.199.200.164"; //192.168.82.85, 54.199.200.164
 
-    vSocket = punching("en1", vClientListenPort, pServerAddr, pPeerAddress, &vPeerPort);
-    if(vSocket>0)
+    tPeerData gxPeerData;
+
+    vCount = punching("en1", vClientListenPort, pServerAddr, &gxPeerData);
+    for(i=0;i<vCount;i++)
     {
-        printf("Connection to %s:%d is esablised\n",pPeerAddress, vPeerPort);
-        close(vSocket);
+        printf("Connection to %s:%d is esablised\n",gxPeerData.pPeerAddress[i], gxPeerData.PeerPort[i]);
+        close(gxPeerData.Socket[i]);
     }
 	// Do any additional setup after loading the view, typically from a nib.
 }

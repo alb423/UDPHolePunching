@@ -35,7 +35,6 @@ typedef struct tNICInfo {
     char pMacAddr[32];
 } tNICInfo;
 
-
 extern int  gLocalInterfaceCount;
 extern tNICInfo gxNICInfo[NET_MAX_INTERFACE];
 extern int CreateUnicastClient(struct sockaddr_in *pSockAddr);
