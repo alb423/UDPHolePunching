@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9AC90B4C196508A700CAA6CA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC90B4B196508A700CAA6CA /* Foundation.framework */; };
-		9AC90B76196508E100CAA6CA /* client.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B71196508E100CAA6CA /* client.c */; };
+		9AC90B76196508E100CAA6CA /* punching.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B71196508E100CAA6CA /* punching.c */; };
 		9AC90B77196508E100CAA6CA /* coordinator.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B72196508E100CAA6CA /* coordinator.c */; };
 		9AC90B78196508E100CAA6CA /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B74196508E100CAA6CA /* util.c */; };
 		9AC90B79196508F600CAA6CA /* libtwp2p.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AC90B73196508E100CAA6CA /* libtwp2p.h */; };
@@ -33,7 +33,7 @@
 		9AC90B4F196508A700CAA6CA /* twp2p-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "twp2p-Prefix.pch"; sourceTree = "<group>"; };
 		9AC90B59196508A700CAA6CA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		9AC90B5C196508A700CAA6CA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		9AC90B71196508E100CAA6CA /* client.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = client.c; path = ../../src/client.c; sourceTree = "<group>"; };
+		9AC90B71196508E100CAA6CA /* punching.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = punching.c; path = ../../src/punching.c; sourceTree = "<group>"; };
 		9AC90B72196508E100CAA6CA /* coordinator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = coordinator.c; path = ../../src/coordinator.c; sourceTree = "<group>"; };
 		9AC90B73196508E100CAA6CA /* libtwp2p.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libtwp2p.h; path = ../../src/libtwp2p.h; sourceTree = "<group>"; };
 		9AC90B74196508E100CAA6CA /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../src/util.c; sourceTree = "<group>"; };
@@ -52,6 +52,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9A2D1993196FD7EC003A6829 /* holePunching */ = {
+			isa = PBXGroup;
+			children = (
+				9AC90B71196508E100CAA6CA /* punching.c */,
+				9AC90B72196508E100CAA6CA /* coordinator.c */,
+			);
+			name = holePunching;
+			sourceTree = "<group>";
+		};
 		9AC90B3F196508A700CAA6CA = {
 			isa = PBXGroup;
 			children = (
@@ -82,8 +91,7 @@
 		9AC90B4D196508A700CAA6CA /* twp2p */ = {
 			isa = PBXGroup;
 			children = (
-				9AC90B71196508E100CAA6CA /* client.c */,
-				9AC90B72196508E100CAA6CA /* coordinator.c */,
+				9A2D1993196FD7EC003A6829 /* holePunching */,
 				9AC90B73196508E100CAA6CA /* libtwp2p.h */,
 				9AC90B74196508E100CAA6CA /* util.c */,
 				9AC90B75196508E100CAA6CA /* util.h */,
@@ -152,7 +160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9AC90B77196508E100CAA6CA /* coordinator.c in Sources */,
-				9AC90B76196508E100CAA6CA /* client.c in Sources */,
+				9AC90B76196508E100CAA6CA /* punching.c in Sources */,
 				9AC90B78196508E100CAA6CA /* util.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
