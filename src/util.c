@@ -256,3 +256,39 @@ void noprintf(char *format, ...)
    ;
 }        
            
+
+char* getNextLine(char* inputLine)
+{
+  char *nextLine = NULL;
+  // Begin by finding the start of the next line (if any):
+  char* ptr=NULL;
+  for (ptr = inputLine; *ptr != '\0'; ++ptr) {
+    if (*ptr == '\r' || *ptr == '\n') {
+      // We found the end of the line
+      ++ptr;
+      while (*ptr == '\r' || *ptr == '\n') ++ptr;
+      nextLine = ptr;
+      if (nextLine[0] == '\0') nextLine = NULL; // special case for end
+      break;
+    }
+  }
+
+  return nextLine;
+}
+           
+// vSendSrcAdd, "192.168.", "8"           
+int checkIPInTheNetwork( char *pTarIP, char *pNetIP, char *pNetMask)
+{
+   int vRet = 1;
+   
+   unsigned int vNetIP = *((unsigned int *) pNetIP);
+   unsigned int vNetMask = *((unsigned int *) pNetMask);
+   
+   unsigned int vTarIP = inet_addr(pTarIP);
+   
+   if((vNetIP & vNetMask) == (vTarIP & vNetMask))
+   {   
+      vRet = 0;       
+   }
+   return vRet ;
+}

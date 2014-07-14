@@ -21,7 +21,6 @@ int main(int argc, char **argv)
    int vLen =0, vExecutableLen=0; 
    int i=0, vCount=0;
    
-   
    // busybox
    vLen = strlen("coordinator");
    vExecutableLen = strlen(argv[0]);
@@ -30,17 +29,24 @@ int main(int argc, char **argv)
       // If the executable name is coordinator
       if(strcmp(&argv[0][vExecutableLen-vLen],"coordinator")==0)
       {
-         return coordinator(argc, argv);
+         if(argc==2)
+         {
+            return coordinator(argv[1]);
+         }
+         else
+         {
+            printf("Usage: coordinator ifname\n");
+         }      
       }
    }
    else
    {
-       if(argc==4)
+       if(argc==5)
        {
           tPeerData gxPeerData;
           memset(&gxPeerData, 0, sizeof(gxPeerData));      
           
-          vCount = punching(argv[1], atoi(argv[2]), argv[3], &gxPeerData);
+          vCount = punching(atoi(argv[1]), argv[2], atoi(argv[3]), argv[4], &gxPeerData);
           for(i=0;i<vCount;i++)
           {
               printf("Connection to %s:%d is esablised\n",gxPeerData.pPeerAddress[i], gxPeerData.PeerPort[i]);
@@ -49,7 +55,7 @@ int main(int argc, char **argv)
        }      
        else
        {
-           printf("Usage: punching ifname localPort coordinatorAddr\n");
+           printf("Usage: punching actor ifname localPort coordinatorAddr\n");
        }         
    }
    return 0;      

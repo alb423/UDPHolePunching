@@ -12,7 +12,6 @@
 
 #include "util.h"
 
-
 typedef struct tMapping{
    int  SrcPort;
    char pSrcAddr[32];  
@@ -26,7 +25,7 @@ typedef struct tClient{
    tMapping xMapping[NET_MAX_INTERFACE];   
 }tClient;
 
-int coordinator(int argc, char **argv)
+int coordinator(char *pIfName)
 {
    int vServerSocket = 0, i=0, j=0, vLen=0;
    int vReciveLen=0, vResult=0, vPrivatePort=0;
@@ -39,17 +38,12 @@ int coordinator(int argc, char **argv)
    int vListenPort = 0, vClientCnt=0;
    
    tClient  vxClient[2];
-   
-   if(argc!=2)
-   {
-     printf("Usage: coordinator interface\n");
-     return -1;
-   }    
+   memset(&vxClient, 0, sizeof(tClient)*2);
    
    initMyIpString();
              
    vListenPort = COORDINATE_PORT;             
-   pMyAddress = getMyIpString(argv[1]); // should be eth1 or eth0
+   pMyAddress = getMyIpString(pIfName); // should be eth1 or eth0
    memset(pSendBuffer, 0, SEND_BUF_LEN);
    sprintf(pSendBuffer, "%s %d", pMyAddress, vListenPort);
    InitMyRandom(pMyAddress);
@@ -131,7 +125,7 @@ int coordinator(int argc, char **argv)
             pi = (struct in_pktinfo *)CMSG_DATA(cmsg); 
             if(pi)
             {
-               char *pTmp, pSrc[32]={0}, pDst[32]={0};
+               char *pTmp, pSrc[32]={0}, pDst[32]={0}, pActor[32]={0};
                   
                // inet_ntoa() use a global buffer to store the string,
                // so we need to copy the value before we invoke inet_ntoa() next time        
@@ -142,7 +136,8 @@ int coordinator(int argc, char **argv)
                pTmp = inet_ntoa(localaddr.sin_addr);
                if(pTmp)
                   memcpy(pSrc, pTmp, strlen(pTmp));
-                
+               
+               // TODO
                //DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
                DBG("receive socket nIndex=%d packet from %s:%d to %s\n", pi->ipi_ifindex, pSrc, ntohs(localaddr.sin_port), pDst);
                if(vReciveLen<1024)
@@ -155,16 +150,19 @@ int coordinator(int argc, char **argv)
                   pTmp = pReceiveData;
                   //memset(&vxClient[vClientCnt], 0, sizeof(tClient));
                   
+                  sscanf(pTmp,"i=%s",pActor);
+                  pTmp = getNextLine(pTmp);
+                  DBG("Actor :\n%s\n", pActor);
                   // colect port mapping relation     
                   for(i=0;i<NET_MAX_INTERFACE;i++)
                   {                                          
                      if(pTmp!=NULL)
                      {
-                        //fprintf(stderr,"pTmp=\n%s\n", pTmp);
+                        fprintf(stderr,"pTmp=%s\n", pTmp);
                         
                         vPrivatePort=0;
                         memset(pPrivateAddress, 0, 32);                        
-                        sscanf(pTmp,"%s %d", pPrivateAddress, &vPrivatePort);
+                        sscanf(pTmp,"c=%s %d\r\n", pPrivateAddress, &vPrivatePort);
                         
                         vxClient[vClientCnt].xMapping[i].SrcPort = ntohs(localaddr.sin_port);                  
                         memcpy(vxClient[vClientCnt].xMapping[i].pSrcAddr, pSrc, 32);
@@ -173,7 +171,8 @@ int coordinator(int argc, char **argv)
                         memcpy(vxClient[vClientCnt].xMapping[i].pPrivateSrcAddr, pPrivateAddress, 32);
                         
                         vxClient[vClientCnt].MappingCount ++; 
-                        
+                        pTmp = getNextLine(pTmp);
+                        /*
                         pTmp = strstr(pTmp, "\n");
                         if(pTmp!=NULL) 
                         {
@@ -182,6 +181,7 @@ int coordinator(int argc, char **argv)
                            if(strlen(pTmp)==0)
                               break;
                         }
+                        */
                      }
                   }
                  

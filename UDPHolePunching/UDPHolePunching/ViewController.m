@@ -19,6 +19,8 @@
 {
     [super viewDidLoad];
     
+    
+#if 0
     // TODO:
     int i=0, vCount=0;
     int vClientListenPort=7272;
@@ -34,6 +36,10 @@
         printf("Connection to %s:%d is esablised\n",gxPeerData.pPeerAddress[i], gxPeerData.PeerPort[i]);
         close(gxPeerData.Socket[i]);
     }
+#else
+    coordinator("en1");
+    
+#endif
 	// Do any additional setup after loading the view, typically from a nib.
 }
 

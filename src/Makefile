@@ -4,8 +4,8 @@ STRIP	= $(CROSS_COMPILE)strip
 AR	= $(CROSS_COMPILE)ar
 
 CFLAGS  = -g -Wall -Wno-format-security
-OBJ     = util.o coordinator.o client.o
-SOURCES = util.c client.c coordinator.c
+OBJ     = util.o coordinator.o punching.o
+SOURCES = util.c punching.c coordinator.c
 LIBS    = libtwp2p.a -lpthread
    
 all: libtwp2p.a punching

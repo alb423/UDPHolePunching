@@ -30,9 +30,17 @@ char gpSendBuffer[SEND_BUF_LEN]={0};
 void PunchingThread(void* data);
 
 // TODO:
+/*
+   Define the structure in gpSendBuffer
+   i=
+   c=
+   
+*/
+
+
 // below triples may have more than one
 // return socket, pPeerAddress, &vPeerPort
-int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, tPeerData *pPeerData)
+int punching(int vActor, char *pIfName, int vPort, char *pRendezvousServerAddress, tPeerData *pPeerData)
 {
    int i=0, j=0;
    int vLen=0, vReciveLen=0, vResult=0, vPeerPort=0;
@@ -51,13 +59,26 @@ int punching(char *pIfName, int vPort, char *pRendezvousServerAddress, tPeerData
    pMyAddress = getMyIpString(pIfName);
    memset(gpSendBuffer, 0, SEND_BUF_LEN);
    
+   if(vActor==ACTOR_IPCAM)
+      sprintf(gpSendBuffer, "i=IAMIPCAM\n");
+   else
+      sprintf(gpSendBuffer, "i=IAMAPP\n");
+   
    //sprintf(gpSendBuffer, "aid=APPDeviceToken\n");
    //vLen = strlen(gpSendBuffer);
    //sprintf(gpSendBuffer+vLen, "cid=CamearID\n");   
    for(i=0;i<gLocalInterfaceCount;i++)
    {
+      // omit 127.0.0.1 here
       vLen = strlen(gpSendBuffer);
-      sprintf(gpSendBuffer+vLen, "%s %d\n", gxNICInfo[i].pLocalAddr, vPort);
+      if(strncmp(gxNICInfo[i].pLocalAddr,"127",3)==0)
+      {
+         printf("omit 127.0.0.1\n");
+      }
+      else
+      {
+         sprintf(gpSendBuffer+vLen, "c=%s %d\n", gxNICInfo[i].pLocalAddr, vPort);
+      }
    }
    fprintf(stderr, "gpSendBuffer=\n%s\n",gpSendBuffer);
    InitMyRandom(pMyAddress);

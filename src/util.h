@@ -53,6 +53,7 @@ extern long our_random() ;
 extern unsigned int our_random16();
 extern unsigned int our_random32();
 extern void UuidGen(char *uuidbuf);
-
+extern int checkIPInTheNetwork( char *pTarIP, char *pNetIP, char *pNetMask);
+extern char* getNextLine(char * inputLine);
 #endif
 
