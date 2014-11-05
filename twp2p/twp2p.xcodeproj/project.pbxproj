@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A58C1011A0A0C0800812900 /* sqlite3_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 9A58C0F91A0A0C0800812900 /* sqlite3_util.c */; };
+		9A58C1021A0A0C0800812900 /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = 9A58C0FB1A0A0C0800812900 /* sqlite3.c */; };
+		9A58C1031A0A0C0800812900 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 9A58C0FE1A0A0C0800812900 /* util.c */; };
 		9AC90B4C196508A700CAA6CA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9AC90B4B196508A700CAA6CA /* Foundation.framework */; };
 		9AC90B76196508E100CAA6CA /* punching.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B71196508E100CAA6CA /* punching.c */; };
 		9AC90B77196508E100CAA6CA /* coordinator.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B72196508E100CAA6CA /* coordinator.c */; };
-		9AC90B78196508E100CAA6CA /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 9AC90B74196508E100CAA6CA /* util.c */; };
-		9AC90B79196508F600CAA6CA /* libtwp2p.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9AC90B73196508E100CAA6CA /* libtwp2p.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -21,13 +22,19 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
-				9AC90B79196508F600CAA6CA /* libtwp2p.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9A58C0F91A0A0C0800812900 /* sqlite3_util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_util.c; path = ../../src/sqlite3_util.c; sourceTree = "<group>"; };
+		9A58C0FA1A0A0C0800812900 /* sqlite3_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3_util.h; path = ../../src/sqlite3_util.h; sourceTree = "<group>"; };
+		9A58C0FB1A0A0C0800812900 /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3.c; path = ../../src/sqlite3.c; sourceTree = "<group>"; };
+		9A58C0FC1A0A0C0800812900 /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sqlite3.h; path = ../../src/sqlite3.h; sourceTree = "<group>"; };
+		9A58C0FD1A0A0C0800812900 /* twp2p_err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = twp2p_err.h; path = ../../src/twp2p_err.h; sourceTree = "<group>"; };
+		9A58C0FE1A0A0C0800812900 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../src/util.c; sourceTree = "<group>"; };
+		9A58C0FF1A0A0C0800812900 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../src/util.h; sourceTree = "<group>"; };
 		9AC90B48196508A700CAA6CA /* libtwp2p.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtwp2p.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC90B4B196508A700CAA6CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9AC90B4F196508A700CAA6CA /* twp2p-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "twp2p-Prefix.pch"; sourceTree = "<group>"; };
@@ -35,9 +42,6 @@
 		9AC90B5C196508A700CAA6CA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		9AC90B71196508E100CAA6CA /* punching.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = punching.c; path = ../../src/punching.c; sourceTree = "<group>"; };
 		9AC90B72196508E100CAA6CA /* coordinator.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = coordinator.c; path = ../../src/coordinator.c; sourceTree = "<group>"; };
-		9AC90B73196508E100CAA6CA /* libtwp2p.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libtwp2p.h; path = ../../src/libtwp2p.h; sourceTree = "<group>"; };
-		9AC90B74196508E100CAA6CA /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../src/util.c; sourceTree = "<group>"; };
-		9AC90B75196508E100CAA6CA /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../src/util.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,10 +95,14 @@
 		9AC90B4D196508A700CAA6CA /* twp2p */ = {
 			isa = PBXGroup;
 			children = (
+				9A58C0F91A0A0C0800812900 /* sqlite3_util.c */,
+				9A58C0FA1A0A0C0800812900 /* sqlite3_util.h */,
+				9A58C0FB1A0A0C0800812900 /* sqlite3.c */,
+				9A58C0FC1A0A0C0800812900 /* sqlite3.h */,
+				9A58C0FD1A0A0C0800812900 /* twp2p_err.h */,
+				9A58C0FE1A0A0C0800812900 /* util.c */,
+				9A58C0FF1A0A0C0800812900 /* util.h */,
 				9A2D1993196FD7EC003A6829 /* holePunching */,
-				9AC90B73196508E100CAA6CA /* libtwp2p.h */,
-				9AC90B74196508E100CAA6CA /* util.c */,
-				9AC90B75196508E100CAA6CA /* util.h */,
 				9AC90B4E196508A700CAA6CA /* Supporting Files */,
 			);
 			path = twp2p;
@@ -160,8 +168,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				9AC90B77196508E100CAA6CA /* coordinator.c in Sources */,
+				9A58C1011A0A0C0800812900 /* sqlite3_util.c in Sources */,
 				9AC90B76196508E100CAA6CA /* punching.c in Sources */,
-				9AC90B78196508E100CAA6CA /* util.c in Sources */,
+				9A58C1021A0A0C0800812900 /* sqlite3.c in Sources */,
+				9A58C1031A0A0C0800812900 /* util.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

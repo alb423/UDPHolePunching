@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "util.h"
+#include "sqlite3_util.h"
 
 typedef struct tMapping{
    int  SrcPort;
@@ -35,20 +36,32 @@ int coordinator(char *pIfName)
    
    char *pMyAddress=NULL;
                
-   int vListenPort = 0, vClientCnt=0;
-   
+   int vListenPort = 0, vClientCnt=0, vSessionId=0;
+    
+   int result=0;
+   char *pDBPath=DBPATH;
+
    tClient  vxClient[2];
+   tClient  vxPeerClient;
    memset(&vxClient, 0, sizeof(tClient)*2);
-   
+   memset(&vxPeerClient, 0, sizeof(tClient));
+    
    initMyIpString();
-             
+   
+   // TODO: don't remove
+    remove(pDBPath);
+    
+   result = DB_Init(pDBPath);
+   if(result<0) printf("DB_Init error!!\n");
+    
+    
    vListenPort = COORDINATE_PORT;             
    pMyAddress = getMyIpString(pIfName); // should be eth1 or eth0
    memset(pSendBuffer, 0, SEND_BUF_LEN);
    sprintf(pSendBuffer, "%s %d", pMyAddress, vListenPort);
    InitMyRandom(pMyAddress);
 
-   vServerSocket = CreateUnicastServer(pMyAddress, vListenPort);
+   vServerSocket = CreateUnicastServer(pMyAddress, &vListenPort);
    if(vServerSocket<0)
    {
       printf("%s:%d, vServerSocket=%d\n", pMyAddress, vListenPort, vServerSocket);
@@ -125,44 +138,66 @@ int coordinator(char *pIfName)
             pi = (struct in_pktinfo *)CMSG_DATA(cmsg); 
             if(pi)
             {
-               char *pTmp, pSrc[32]={0}, pDst[32]={0}, pActor[32]={0};
-                  
+                char *pTmpAddr, pSrc[32]={0}, pDst[32]={0}, pActor[32]={0}, pUserId[32]={0}, pPeerId[32]={0};
+                char pSrcPort[32]={0}, pPrivateSrcPort[32]={0};
+
                // inet_ntoa() use a global buffer to store the string,
                // so we need to copy the value before we invoke inet_ntoa() next time        
-               pTmp = inet_ntoa(pi->ipi_addr);
-               if(pTmp)
-                  memcpy(pDst, pTmp, strlen(pTmp));
+               pTmpAddr = inet_ntoa(pi->ipi_addr);
+               if(pTmpAddr)
+                  memcpy(pDst, pTmpAddr, strlen(pTmpAddr));
 
-               pTmp = inet_ntoa(localaddr.sin_addr);
-               if(pTmp)
-                  memcpy(pSrc, pTmp, strlen(pTmp));
+               pTmpAddr = inet_ntoa(localaddr.sin_addr);
+               if(pTmpAddr)
+                  memcpy(pSrc, pTmpAddr, strlen(pTmpAddr));
                
-               // TODO
                //DBG("%s %s :%d\n",__FILE__,__func__, __LINE__);
-               DBG("receive socket nIndex=%d packet from %s:%d to %s\n", pi->ipi_ifindex, pSrc, ntohs(localaddr.sin_port), pDst);
+               // Check here
+               memset(&vxClient, 0, sizeof(tClient)*2);
+                
+               DBG("\n<====\nreceive socket ipi_ifindex=%d packet from %s to %s:%d\n", pi->ipi_ifindex, pDst, pSrc, ntohs(localaddr.sin_port));
                if(vReciveLen<1024)
                {
-                  char *pTmp;
+                  char *pTmp2;
                   memset(pReceiveData, 0, 1024);
                   memcpy(pReceiveData, iovbuf, vReciveLen);
                   DBG("receive data :\n%s\n", pReceiveData);
                   
-                  pTmp = pReceiveData;
+                  pTmp2 = pReceiveData;
                   //memset(&vxClient[vClientCnt], 0, sizeof(tClient));
                   
-                  sscanf(pTmp,"i=%s",pActor);
-                  pTmp = getNextLine(pTmp);
-                  DBG("Actor :\n%s\n", pActor);
+                  // TODO: implement a utility to parse SDP
+                  sscanf(pTmp2,"i=%s",pActor);
+                  pTmp2 = getNextLine(pTmp2);
+                  DBG("Actor :%s\n", pActor);
+                   
+                  sscanf(pTmp2,"u=%s",pUserId);
+                  pTmp2 = getNextLine(pTmp2);
+                  DBG("User ID :%s\n", pUserId);
+                  
+                  sscanf(pTmp2,"p=%s",pPeerId);
+                  if(pPeerId[0]!=0x00)
+                  {
+                     vSessionId = DB_SESSION_InsertNew(pDBPath, pUserId, pPeerId);
+                     pTmp2 = getNextLine(pTmp2);
+                     DBG("Peer ID :%s\n", pPeerId);
+                  }
+                  else
+                  {
+                     vSessionId = DB_SESSION_InsertNew(pDBPath, pUserId, "");
+                     DBG("Peer ID :%s\n", pPeerId);
+                  }
+                   
                   // colect port mapping relation     
                   for(i=0;i<NET_MAX_INTERFACE;i++)
                   {                                          
-                     if(pTmp!=NULL)
+                     if(pTmp2!=NULL)
                      {
-                        fprintf(stderr,"pTmp=%s\n", pTmp);
+                        fprintf(stderr,"pTmp=%s\n", pTmp2);
                         
                         vPrivatePort=0;
                         memset(pPrivateAddress, 0, 32);                        
-                        sscanf(pTmp,"c=%s %d\r\n", pPrivateAddress, &vPrivatePort);
+                        sscanf(pTmp2,"c=%s %d\r\n", pPrivateAddress, &vPrivatePort);
                         
                         vxClient[vClientCnt].xMapping[i].SrcPort = ntohs(localaddr.sin_port);                  
                         memcpy(vxClient[vClientCnt].xMapping[i].pSrcAddr, pSrc, 32);
@@ -171,7 +206,7 @@ int coordinator(char *pIfName)
                         memcpy(vxClient[vClientCnt].xMapping[i].pPrivateSrcAddr, pPrivateAddress, 32);
                         
                         vxClient[vClientCnt].MappingCount ++; 
-                        pTmp = getNextLine(pTmp);
+                        pTmp2 = getNextLine(pTmp2);
                         /*
                         pTmp = strstr(pTmp, "\n");
                         if(pTmp!=NULL) 
@@ -185,40 +220,124 @@ int coordinator(char *pIfName)
                      }
                   }
                  
-                  
                   fprintf(stderr,"Generate mapping relation for client_%d is\n", vClientCnt);
                   for(i=0;i<vxClient[vClientCnt].MappingCount;i++)
                   {
+                      char pEPort[8]={0}, pIPort[8]={0};
+                      sprintf(pEPort, "%d", vxClient[vClientCnt].xMapping[i].SrcPort);
+                      sprintf(pIPort, "%d", vxClient[vClientCnt].xMapping[i].PrivateSrcPort);
+                      
+                      // store relation into a small database, for example: sqllite
+                      DB_MAPPING_InsertNew(pDBPath, pUserId, \
+                                           vxClient[vClientCnt].xMapping[i].pSrcAddr, pEPort, \
+                                           vxClient[vClientCnt].xMapping[i].pPrivateSrcAddr,pIPort);
+                      
                      fprintf(stderr,"\"%s %d\" to \"%s %d\"\n",\
                         vxClient[vClientCnt].xMapping[i].pSrcAddr, vxClient[vClientCnt].xMapping[i].SrcPort, \
-                        vxClient[vClientCnt].xMapping[i].pPrivateSrcAddr, vxClient[vClientCnt].xMapping[i].PrivateSrcPort);                  
+                        vxClient[vClientCnt].xMapping[i].pPrivateSrcAddr, vxClient[vClientCnt].xMapping[i].PrivateSrcPort);
+                      
                   }
                   fprintf(stderr,"\n");
                }                     
                
+                
+               // vLen = strlen(gpSendBuffer);
+               // sprintf(gpSendBuffer+vLen, "p=080027fdf0db\n", gxNICInfo[i].pMacAddr);
+                
+               // Query connection info from database to find if peerId is already connected
+               vResult = DB_MAPPING_GetDataByUserId((char *)pDBPath, (char *)pPeerId, (char *)vxPeerClient.xMapping[0].pSrcAddr, (char *)pSrcPort, (char *)vxPeerClient.xMapping[0].pPrivateSrcAddr, (char *)pPrivateSrcPort);
+               printf("query pPeerId %s, result:%d\n", pPeerId, vResult);
+                
+#if 1
+               // TODO: to support multipl xMapping
+                
+               // Send back only when both side is connected ??
+               if(vResult>0)
+               {
+                  vSessionId = vResult;
+                  vxPeerClient.MappingCount = 1;
+                  vxPeerClient.xMapping[0].SrcPort = atoi(pSrcPort);
+                  vxPeerClient.xMapping[0].PrivateSrcPort = atoi(pPrivateSrcPort);
+                
+                  // send port mapping relation back
+                  struct sockaddr_in vSockAddr;
+                  memset((char *) &vSockAddr, 0, sizeof(vSockAddr));
+                  vSockAddr.sin_family = AF_INET;
+                  vSockAddr.sin_addr.s_addr = inet_addr(vxClient[0].xMapping[0].pSrcAddr);
+                  vSockAddr.sin_port = htons(vxClient[0].xMapping[0].SrcPort);
+                   
+                  memset(pSendBuffer, 0, SEND_BUF_LEN);
+                  vLen = 0;
+                  sprintf(pSendBuffer, "s=%d\n", vSessionId);
+                  vLen = strlen(pSendBuffer);
+                  sprintf(pSendBuffer+vLen, "c=%s %d\n", vxClient[0].xMapping[0].pSrcAddr, vxClient[0].xMapping[0].SrcPort);
+                  vLen = strlen(pSendBuffer);
+                  // The 1st item is used to store public address and port
+                  for(j=0;j<vxClient[0].MappingCount;j++)
+                  {
+                      sprintf(pSendBuffer+vLen, "c=%s %d\n", vxClient[0].xMapping[j].pPrivateSrcAddr, vxClient[0].xMapping[j].PrivateSrcPort);
+                      vLen = strlen(pSendBuffer);
+                  }
+                   
+                  fprintf(stderr,"send below data to %s:%d\n%s\n",vxClient[0].xMapping[0].pSrcAddr, vxClient[0].xMapping[0].SrcPort, pSendBuffer);
+                  if(sendto(vServerSocket, pSendBuffer, strlen(pSendBuffer), 0, (struct sockaddr*)&vSockAddr, sizeof(vSockAddr)) < 0)
+                  {
+                     fprintf (stderr, "Cannot send data to client %s:%d !!\n", vxClient[0].xMapping[0].pSrcAddr, vxClient[0].xMapping[0].SrcPort);
+                  }
+                   
+                   
+                  memset((char *) &vSockAddr, 0, sizeof(vSockAddr));
+                  vSockAddr.sin_family = AF_INET;
+                  vSockAddr.sin_addr.s_addr = inet_addr(vxPeerClient.xMapping[0].pSrcAddr);
+                  vSockAddr.sin_port = htons(vxPeerClient.xMapping[0].SrcPort);
+                   
+                  memset(pSendBuffer, 0, SEND_BUF_LEN);
+                  vLen = 0;
+                  sprintf(pSendBuffer, "s=%d\n", vSessionId);
+                  vLen = strlen(pSendBuffer);
+                  sprintf(pSendBuffer+vLen, "c=%s %d\n", vxPeerClient.xMapping[0].pSrcAddr, vxPeerClient.xMapping[0].SrcPort);
+                  vLen = strlen(pSendBuffer);
+                  // The 1st item is used to store public address and port
+                  for(j=0;j<vxPeerClient.MappingCount;j++)
+                  {
+                     sprintf(pSendBuffer+vLen, "c=%s %d\n", vxPeerClient.xMapping[j].pPrivateSrcAddr, vxPeerClient.xMapping[j].PrivateSrcPort);
+                     vLen = strlen(pSendBuffer);
+                  }
+                   
+                  fprintf(stderr,"send below data to %s:%d\n%s\n",vxPeerClient.xMapping[0].pSrcAddr, vxPeerClient.xMapping[0].SrcPort,pSendBuffer);
+                  if(sendto(vServerSocket, pSendBuffer, strlen(pSendBuffer), 0, (struct sockaddr*)&vSockAddr, sizeof(vSockAddr)) < 0)
+                  {
+                     fprintf (stderr, "Cannot send data to client %s:%d !!\n", vxPeerClient.xMapping[0].pSrcAddr, vxPeerClient.xMapping[0].SrcPort);
+                  }
+                   
+               }
+
+#else
                vClientCnt++;
 
-                if(vClientCnt==2)
-                {
-                  // send port mapping relatiion back
+               if(vClientCnt==2)
+               {
+                  // send port mapping relation back
                   for(i=0;i<2;i++)
                   {
                      struct sockaddr_in vSockAddr;
                      memset((char *) &vSockAddr, 0, sizeof(vSockAddr));
                      vSockAddr.sin_family = AF_INET;
                      vSockAddr.sin_addr.s_addr = inet_addr(vxClient[i].xMapping[0].pSrcAddr);
-                     vSockAddr.sin_port = htons(vxClient[i].xMapping[0].SrcPort);  
-    
+                     vSockAddr.sin_port = htons(vxClient[i].xMapping[0].SrcPort);
+                      
                      memset(pSendBuffer, 0, SEND_BUF_LEN);
                      if(i==0)
                      {
                         vLen = 0;
-                        sprintf(pSendBuffer, "%s %d\n", vxClient[1].xMapping[0].pSrcAddr, vxClient[1].xMapping[0].SrcPort);
+                        sprintf(pSendBuffer, "s=%d\n", vSessionId);
+                        vLen = strlen(pSendBuffer);
+                        sprintf(pSendBuffer+vLen, "c=%s %d\n", vxClient[1].xMapping[0].pSrcAddr, vxClient[1].xMapping[0].SrcPort);
                         vLen = strlen(pSendBuffer);   
-                        // The 1st item is used to store public address and pot                     
+                        // The 1st item is used to store public address and port
                         for(j=0;j<vxClient[1].MappingCount;j++)
                         {                        
-                           sprintf(pSendBuffer+vLen, "%s %d\n", vxClient[1].xMapping[j].pPrivateSrcAddr, vxClient[1].xMapping[j].PrivateSrcPort);
+                           sprintf(pSendBuffer+vLen, "c=%s %d\n", vxClient[1].xMapping[j].pPrivateSrcAddr, vxClient[1].xMapping[j].PrivateSrcPort);
                            vLen = strlen(pSendBuffer);
                         }
                         
@@ -227,11 +346,13 @@ int coordinator(char *pIfName)
                      else if(i==1)
                      {
                         vLen = 0;
-                        sprintf(pSendBuffer, "%s %d\n", vxClient[0].xMapping[0].pSrcAddr, vxClient[0].xMapping[0].SrcPort);
+                        sprintf(pSendBuffer, "s=%d\n", vSessionId);
+                        vLen = strlen(pSendBuffer);
+                        sprintf(pSendBuffer+vLen, "c=%s %d\n", vxClient[0].xMapping[0].pSrcAddr, vxClient[0].xMapping[0].SrcPort);
                         vLen = strlen(pSendBuffer);                        
                         for(j=0;j<vxClient[0].MappingCount;j++)
                         {                               
-                           sprintf(pSendBuffer+vLen, "%s %d\n", vxClient[0].xMapping[j].pPrivateSrcAddr, vxClient[0].xMapping[j].PrivateSrcPort);
+                           sprintf(pSendBuffer+vLen, "c=%s %d\n", vxClient[0].xMapping[j].pPrivateSrcAddr, vxClient[0].xMapping[j].PrivateSrcPort);
                            vLen = strlen(pSendBuffer);
                         }
                         fprintf(stderr,"send below data to %s\n%s\n",vxClient[1].xMapping[0].pSrcAddr, pSendBuffer);
@@ -243,9 +364,10 @@ int coordinator(char *pIfName)
                      }
                   }   
                   vClientCnt = 0;
-                  memset(&vxClient, 0, sizeof(tClient)*2);                                  
-                }
-            }    
+                  memset(&vxClient, 0, sizeof(tClient)*2);
+               }
+#endif
+            }
             break;
          }
          else if(cmsg->cmsg_type == IPPROTO_IP)

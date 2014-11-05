@@ -38,7 +38,7 @@ typedef struct tNICInfo {
 extern int  gLocalInterfaceCount;
 extern tNICInfo gxNICInfo[NET_MAX_INTERFACE];
 extern int CreateUnicastClient(struct sockaddr_in *pSockAddr);
-extern int CreateUnicastServer(char *pAddress, int port);
+extern int CreateUnicastServer(char *pAddress, int *pPort);
 
 extern void * MyMalloc(int vSize);
 extern void MyFree(void *ptr);
@@ -55,5 +55,7 @@ extern unsigned int our_random32();
 extern void UuidGen(char *uuidbuf);
 extern int checkIPInTheNetwork( char *pTarIP, char *pNetIP, char *pNetMask);
 extern char* getNextLine(char * inputLine);
+
+extern int  isPrivateV4(unsigned int ip_in_host_order);
 #endif
 

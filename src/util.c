@@ -14,6 +14,39 @@
 
 #include <ifaddrs.h>
 
+//////
+#include <sys/param.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/sysctl.h>
+#include <sys/time.h>
+
+#include <net/if.h>
+#include <net/if_var.h>
+#include <net/if_dl.h>
+#include <net/if_types.h>
+#include <net/route.h>
+
+/* IP */
+#include <netinet/in.h>
+#include <netinet/in_var.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
+/* OSI */
+
+#include <ctype.h>
+#include <err.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+//////
+
+
+#include "twp2p_err.h"
 #include "util.h"
 
 int  gLocalInterfaceCount=0;
@@ -44,7 +77,7 @@ char * CopyString(char *pSrc)
    
    if(!pSrc) return NULL;
    
-   vLen = strlen(pSrc);
+   vLen = (int)strlen(pSrc);
    pDst = MyMalloc(vLen+1); 
    memcpy(pDst, pSrc, vLen);
    
@@ -71,7 +104,7 @@ char * getMyIpString(char *pIfName)
          return CopyString(gxNICInfo[i].pLocalAddr);
       } 
    }
-   return CopyString(gxNICInfo[0].pLocalAddr);
+   return NULL;
 }
 
 
@@ -95,12 +128,48 @@ char * initMyIpString(void)
          tmpAddrPtr=&((struct sockaddr_in *)ifa->ifa_addr)->sin_addr;
          
          inet_ntop(AF_INET, tmpAddrPtr, addressBuffer, INET_ADDRSTRLEN);
-         DBG("%s IP Address %s\n", ifa->ifa_name, addressBuffer);
-
+         DBG("%s IP Address %s ", ifa->ifa_name, addressBuffer);
+         unsigned int vIP = ntohl(((struct in_addr *)tmpAddrPtr)->s_addr);
+         if(isPrivateV4(vIP)==1)
+         {
+            DBG("(Private %u) \n",vIP);
+         }
+         else
+         {
+            DBG("(Public %u) \n", vIP);
+         }
          // Note: you may set local address for different interface. For example:eth0, eth1
          memcpy(gxNICInfo[vInterfaceCount].pLocalAddr, addressBuffer, strlen(addressBuffer));
          memcpy(gxNICInfo[vInterfaceCount].pIfName, ifa->ifa_name, strlen(ifa->ifa_name));
 
+#ifdef __APPLE__
+#else
+          {
+
+              // For linux system
+              int sock;
+              struct ifreq ifr;
+              
+              sock = socket(AF_INET, SOCK_DGRAM, 0);
+              ifr.ifr_addr.sa_family = AF_INET;
+              
+              strncpy(ifr.ifr_name, ifa->ifa_name, strlen(ifa->ifa_name));
+              
+              ioctl(sock, SIOCGIFHWADDR, &ifr);
+              
+              close(sock);
+              
+              sprintf(gxNICInfo[vInterfaceCount].pMacAddr, "%.2x%.2x%.2x%.2x%.2x%.2x",
+                      (unsigned char)ifr.ifr_hwaddr.sa_data[0],
+                      (unsigned char)ifr.ifr_hwaddr.sa_data[1],
+                      (unsigned char)ifr.ifr_hwaddr.sa_data[2],
+                      (unsigned char)ifr.ifr_hwaddr.sa_data[3],
+                      (unsigned char)ifr.ifr_hwaddr.sa_data[4],
+                      (unsigned char)ifr.ifr_hwaddr.sa_data[5]);
+              DBG("MAC %s\n", gxNICInfo[vInterfaceCount].pMacAddr);
+          }
+#endif
+          
          vInterfaceCount++;
          gLocalInterfaceCount++;
       }
@@ -127,12 +196,17 @@ int CreateUnicastClient(struct sockaddr_in *pSockAddr)
    struct timeval timeout;
    timeout.tv_sec  = 10;
    timeout.tv_usec = 0;
+
+   if(pSockAddr==NULL)
+   {
+      return ERR_ARGUMENT_FAIL;
+   }
    
    sd = socket(AF_INET, SOCK_DGRAM, 0);
    if(sd < 0)
    {
       perror("Opening datagram socket error");
-      exit(1);
+      return ERR_SOCKET_FAIL;
    }
    //else
    //   DBG("Opening the datagram socket %d...OK.\n", sd);
@@ -140,33 +214,40 @@ int CreateUnicastClient(struct sockaddr_in *pSockAddr)
    if(setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(timeout)) < 0)
    {
       DBG("setsockopt...error.\n");
+      return ERR_SOCKET_FAIL;      
    }
    
    if(bind(sd, (struct sockaddr*)pSockAddr, sizeof(*pSockAddr)))
    {
       perror("Binding datagram socket error");
       close(sd);
-      exit(1);
+      return ERR_BIND_FAIL;
    }   
    DBG("Create unicast client socket %d at port %d...OK.\n",sd, ntohs(pSockAddr->sin_port));
    return sd;
 }
 
-int CreateUnicastServer(char *pAddress, int vPort)
+// if *pPort <=0, let system select port for us
+int CreateUnicastServer(char *pAddress, int *pPort)
 {
    int sd;
+   int vPort;
    struct sockaddr_in localSock;   
+   socklen_t vSockLen;
    
    if(!pAddress)
-      return -1;
+      return ERR_ARGUMENT_FAIL;
    if(strlen(pAddress)==0)
-      return -1;
-         
+      return ERR_ARGUMENT_FAIL;
+   if(!pPort)
+      return ERR_ARGUMENT_FAIL;
+
+   vPort = *pPort;
    sd = socket(AF_INET, SOCK_DGRAM, 0);
    if(sd < 0)
    {
       perror("Opening datagram socket error");
-      exit(1);
+      return ERR_SOCKET_FAIL;
    }
    //else
    //   DBG("Opening unicast server socket %d for ip %s...OK.\n",sd, pAddress);
@@ -175,17 +256,17 @@ int CreateUnicastServer(char *pAddress, int vPort)
    if(setsockopt(sd, IPPROTO_IP, IP_PKTINFO, &opt, sizeof(opt)) < 0)
    {
        perror("Setting IP_PKTINFO error");
-       close(sd);
-       exit(1);
+       return ERR_SOCKET_FAIL;
    }
     
    if(setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0)
    {
       perror("Setting SO_REUSEADDR error");
       close(sd);
-      exit(1);
+      return ERR_SOCKET_FAIL;
    }
 /*      
+   // For Mac only
    if(setsockopt(sd, SOL_SOCKET, SO_REUSEPORT, (char *)&opt, sizeof(opt)) < 0)
    {
       perror("Setting SO_REUSEADDR error");
@@ -193,19 +274,47 @@ int CreateUnicastServer(char *pAddress, int vPort)
       exit(1);
    }
 */    
-   memset((char *) &localSock, 0, sizeof(localSock));
-   localSock.sin_family = AF_INET;
-   localSock.sin_port = htons(vPort);
-   localSock.sin_addr.s_addr = inet_addr(pAddress);
-   
-   if(bind(sd, (struct sockaddr*)&localSock, sizeof(localSock)))
+   if(vPort>0)
    {
-      perror("Binding datagram socket error");
-      close(sd);
-      exit(1);
+      memset((char *) &localSock, 0, sizeof(localSock));
+      localSock.sin_family = AF_INET;
+      localSock.sin_port = htons(vPort);
+      localSock.sin_addr.s_addr = inet_addr(pAddress);
+      
+      if(bind(sd, (struct sockaddr*)&localSock, sizeof(localSock)))
+      {
+         perror("Binding datagram socket error");
+         close(sd);
+         return ERR_BIND_FAIL;
+      }
+      //else
+      //   DBG("Binding datagram socket...OK.\n");      
    }
-   //else
-   //   DBG("Binding datagram socket...OK.\n");
+   else
+   {
+      memset((char *) &localSock, 0, sizeof(localSock));
+      localSock.sin_family = AF_INET;
+      localSock.sin_port = 0;  // let system select port
+      localSock.sin_addr.s_addr = inet_addr(pAddress);
+      
+      if(bind(sd, (struct sockaddr*)&localSock, sizeof(localSock)))
+      {
+         perror("Binding datagram socket error");
+         close(sd);
+         return ERR_BIND_FAIL;
+      }     
+
+      
+      vSockLen = sizeof(localSock);
+      if(getsockname(sd, (struct sockaddr*)&localSock, &vSockLen))
+      {
+         perror("getsockname error");
+         return ERR_SOCKET_FAIL;
+      }
+      vPort = ntohs(localSock.sin_port);
+      *pPort = vPort;      
+      
+   }
    
    DBG("Create unicast server socket %d at %s:%d...OK.\n",sd, pAddress,vPort);
    return sd;
@@ -220,7 +329,7 @@ void InitMyRandom(char *myipaddr)
    ourAddress = ntohl(inet_addr(myipaddr));
    gettimeofday(&timeNow, NULL);
    
-   unsigned int seed = ourAddress^timeNow.tv_sec^timeNow.tv_usec;
+   unsigned int seed = (unsigned int)(ourAddress^timeNow.tv_sec^timeNow.tv_usec);
      
    srandom(seed);
 }
@@ -261,7 +370,7 @@ char* getNextLine(char* inputLine)
 {
   char *nextLine = NULL;
   // Begin by finding the start of the next line (if any):
-  char* ptr=NULL;
+  char *ptr=NULL; 
   for (ptr = inputLine; *ptr != '\0'; ++ptr) {
     if (*ptr == '\r' || *ptr == '\n') {
       // We found the end of the line
@@ -292,3 +401,13 @@ int checkIPInTheNetwork( char *pTarIP, char *pNetIP, char *pNetMask)
    }
    return vRet ;
 }
+
+int isPrivateV4(unsigned int ip_in_host_order)
+{
+   return ((ip_in_host_order >> 24) == 127) ||
+   ((ip_in_host_order >> 24) == 10) ||
+   ((ip_in_host_order >> 20) == ((172<<4) | 1)) ||
+   ((ip_in_host_order >> 16) == ((192<<8) | 168)) ||
+   ((ip_in_host_order >> 16) == ((168<<8) | 254));
+}
+
