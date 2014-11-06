@@ -27,6 +27,17 @@ extern void noprintf(char *format, ...);
 #define INTERFACE_NAME_2 "eth1"
 #endif
 
+typedef struct tSessionInfo {
+    char pInfo[32];
+    
+    int  ConnCount;
+    char pConnAddr[NET_MAX_INTERFACE][32];
+    int ConnPort[NET_MAX_INTERFACE];
+    
+    char pUserId[32];
+    char pPeerId[32];
+    char pSessionId[32];
+} tSessionInfo;
 
 // Network
 typedef struct tNICInfo {
@@ -57,5 +68,5 @@ extern int checkIPInTheNetwork( char *pTarIP, char *pNetIP, char *pNetMask);
 extern char* getNextLine(char * inputLine);
 
 extern int  isPrivateV4(unsigned int ip_in_host_order);
+extern int parseUserData(char *pIn, tSessionInfo *pSessionInfo);
 #endif
-
