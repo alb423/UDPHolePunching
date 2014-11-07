@@ -41,13 +41,15 @@ int main(int argc, char **argv)
     } else {
 
         if(argc==5) {
-            tPeerData gxPeerData;
-            memset(&gxPeerData, 0, sizeof(gxPeerData));
+            tPeerData vxPeerData;
+            tLocalData vxLocalData;
+            memset(&vxPeerData, 0, sizeof(tPeerData));
+            memset(&vxLocalData, 0, sizeof(tLocalData));
 
-            vCount = punching(atoi(argv[1]), argv[2], atoi(argv[3]), argv[4], &gxPeerData);
+            vCount = punching(atoi(argv[1]), argv[2], atoi(argv[3]), argv[4], &vxLocalData, &vxPeerData);
             for(i=0; i<vCount; i++) {
-                printf("Connection to %s:%d is esablised\n",gxPeerData.pPeerAddress[i], gxPeerData.PeerPort[i]);
-                close(gxPeerData.Socket[i]);
+                printf("Connection to %s:%d is esablised\n",vxPeerData.pAddress[i], vxPeerData.Port[i]);
+                close(vxPeerData.Socket[i]);
             }
         } else {
             printf("Usage: punching actor ifname localPort coordinatorAddr\n");
