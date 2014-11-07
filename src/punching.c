@@ -33,7 +33,7 @@ void PunchingThread(void* data);
 
 // below triples may have more than one
 // return socket, pPeerAddress, &vPeerPort
-int punching(eP2PActor vActor, char *pIfName, int vPort, char *pRendezvousServerAddress, tPeerData *pPeerData)
+int punching(eP2PActor vActor, char *pIfName, int vPort, char *pRendezvousServerAddress, tLocalData *pLocalData, tPeerData *pPeerData)
 {
     int i=0, j=0;
     int vLen=0, vReciveLen=0, vResult=0, vPeerPort=0;
@@ -65,6 +65,8 @@ int punching(eP2PActor vActor, char *pIfName, int vPort, char *pRendezvousServer
     // The default interface name in Linux OS is "eth"
     // The default interface name in MAC OS is   "en"
     // TODO: the default interface name of iPhone or Android may be different
+    
+    // TODO: copy pLocalData here
     printf("gLocalInterfaceCount=%d\n", gLocalInterfaceCount);
     for(i=0; i<gLocalInterfaceCount; i++) {
         printf("%s %s\n", gxNICInfo[i].pIfName, gxNICInfo[i].pMacAddr);
@@ -354,9 +356,9 @@ int punching(eP2PActor vActor, char *pIfName, int vPort, char *pRendezvousServer
                                     char *pTmp2;
                                     pTmp2 = inet_ntoa(localaddr.sin_addr);
                                     if(pTmp2)
-                                        memcpy(pPeerData->pPeerAddress[vPunchingSuccessCount], pTmp2, strlen(pTmp2));
+                                        memcpy(pPeerData->pAddress[vPunchingSuccessCount], pTmp2, strlen(pTmp2));
 
-                                    pPeerData->PeerPort[vPunchingSuccessCount] = ntohs(localaddr.sin_port);
+                                    pPeerData->Port[vPunchingSuccessCount] = ntohs(localaddr.sin_port);
                                     pPeerData->Socket[vPunchingSuccessCount] = vServerSocket;
                                     pPeerData->s_addr[vPunchingSuccessCount] = localaddr.sin_addr.s_addr;
                                     vPunchingSuccessCount++;

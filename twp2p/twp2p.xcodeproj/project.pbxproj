@@ -35,6 +35,7 @@
 		9A58C0FD1A0A0C0800812900 /* twp2p_err.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = twp2p_err.h; path = ../../src/twp2p_err.h; sourceTree = "<group>"; };
 		9A58C0FE1A0A0C0800812900 /* util.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = util.c; path = ../../src/util.c; sourceTree = "<group>"; };
 		9A58C0FF1A0A0C0800812900 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = util.h; path = ../../src/util.h; sourceTree = "<group>"; };
+		9A668D561A0C762A0094DDDD /* libtwp2p.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libtwp2p.h; path = ../../src/libtwp2p.h; sourceTree = "<group>"; };
 		9AC90B48196508A700CAA6CA /* libtwp2p.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libtwp2p.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9AC90B4B196508A700CAA6CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		9AC90B4F196508A700CAA6CA /* twp2p-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "twp2p-Prefix.pch"; sourceTree = "<group>"; };
@@ -95,6 +96,7 @@
 		9AC90B4D196508A700CAA6CA /* twp2p */ = {
 			isa = PBXGroup;
 			children = (
+				9A668D561A0C762A0094DDDD /* libtwp2p.h */,
 				9A58C0F91A0A0C0800812900 /* sqlite3_util.c */,
 				9A58C0FA1A0A0C0800812900 /* sqlite3_util.h */,
 				9A58C0FB1A0A0C0800812900 /* sqlite3.c */,

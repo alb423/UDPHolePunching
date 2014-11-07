@@ -19,9 +19,14 @@ typedef struct tPeerData {
     int punchingID;
     in_addr_t s_addr[NET_MAX_INTERFACE];
     int  Socket[NET_MAX_INTERFACE];
-    int  PeerPort[NET_MAX_INTERFACE];
-    char pPeerAddress[NET_MAX_INTERFACE][32];
+    int  Port[NET_MAX_INTERFACE];
+    char pAddress[NET_MAX_INTERFACE][32];
 } tPeerData;
+
+typedef struct tLocalData {
+    int  Port[NET_MAX_INTERFACE];
+    char pAddress[NET_MAX_INTERFACE][32];
+} tLocalData;
 
 extern int coordinator(char *pIfName);
 
@@ -29,7 +34,7 @@ extern int coordinator(char *pIfName);
 return <= 0,  means punching fail
 return > 0, means punching success
 */
-extern int punching(eP2PActor vActor, char *pIfName, int vPort, char *pRendezvousServerAddress, tPeerData *pPeerData);
+extern int punching(eP2PActor vActor, char *pIfName, int vPort, char *pRendezvousServerAddress, tLocalData *pLocalData, tPeerData *pPeerData);
 
 
 #endif
